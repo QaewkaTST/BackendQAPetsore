@@ -1,0 +1,390 @@
+{
+	"info": {
+		"_postman_id": "1c0250d0-7a2e-4cf2-ae3e-e3784a0be4dd",
+		"name": "Petstore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21607548",
+		"_collection_link": "https://pet111-4096.postman.co/workspace/213~a0886b74-a906-4ff5-8a00-252e4928e58f/collection/21607548-1c0250d0-7a2e-4cf2-ae3e-e3784a0be4dd?action=share&source=collection_link&creator=21607548"
+	},
+	"item": [
+		{
+			"name": "Add Pet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Сейвимо рандомний first_name\r",
+							"const response = pm.response.json();\r",
+							"pm.collectionVariables.set(\"saved_first_name\", response.category.name);\r",
+							"\r",
+							"// Перевірка на статус код 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Перевірка ID pet ( не 0)\r",
+							"pm.test(\"Pet ID is valid\", function () {\r",
+							"    pm.expect(response.id).to.not.eql(0);\r",
+							"});\r",
+							"\r",
+							"// Перевірка category ID і name\r",
+							"pm.test(\"Category ID is valid\", function () {\r",
+							"    pm.expect(response.category.id).to.not.eql(0);\r",
+							"});\r",
+							"pm.test(\"Category Name is valid\", function () {\r",
+							"    pm.expect(response.category.name).to.not.eql(\"string\");\r",
+							"});\r",
+							"\r",
+							"// Перевірка pet name\r",
+							"pm.test(\"Pet Name is valid\", function () {\r",
+							"    pm.expect(response.name).to.not.eql(\"string\");\r",
+							"});\r",
+							"\r",
+							"// Перевірка tags Id не 0 і name\r",
+							"pm.test(\"Tag ID is valid\", function () {\r",
+							"       pm.expect(response.tags[0].id).to.not.eql(0);\r",
+							"});\r",
+							" pm.test(\"Tag Name is valid\", function () {\r",
+							"    pm.expect(response.tags[0].name).to.not.eql(\"string\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Константи для рандомайзера звірів та статусів та тегів щвірів \r",
+							"const animals = [\r",
+							"    \"Dog\", \"Cat\", \"Hamster\", \"Guinea Pig\", \"Rabbit\", \"Parrot\",\r",
+							"    \"Budgie\", \"Canary\", \"Goldfish\", \"Betta Fish\", \"Koi Fish\",\r",
+							"    \"Turtle\", \"Tortoise\", \"Snake\", \"Gecko\", \"Bearded Dragon\",\r",
+							"    \"Chinchilla\", \"Ferret\", \"Mouse\", \"Rat\", \"Gerbil\", \"Lovebird\",\r",
+							"    \"Cockatiel\", \"Finch\", \"Hermit Crab\", \"Axolotl\", \"Frog\",\r",
+							"    \"Newt\", \"Tarentula\", \"Scorpion\", \"Sugar Glider\", \"Degu\",\r",
+							"    \"Parakeet\", \"Myna\", \"Pigeon\", \"Quail\", \"Salamander\",\r",
+							"    \"Ant Colony\", \"Sea Monkeys\", \"Stick Insect\", \"Snail\"\r",
+							"];\r",
+							"\r",
+							"const statusList = [\"available\", \"pending\", \"sold\"];\r",
+							"\r",
+							"const tagname = [\"Playful\", \"Friendly\", \"Cuddly\", \"Energetic\", \"Loyal\",\r",
+							"    \"Quiet\", \"Curious\", \"Independent\", \"Shy\", \"Active\",\r",
+							"    \"Gentle\", \"Brave\", \"Smart\", \"Funny\", \"Lazy\",\r",
+							"    \"Affectionate\", \"Alert\", \"Protective\", \"Loving\", \"Social\",\r",
+							"    \"Adventurous\", \"Chill\", \"Clumsy\", \"Talkative\", \"Elegant\"];\r",
+							"\r",
+							"// Рандомайзер\r",
+							"const randomAnimal = animals[Math.floor(Math.random() * animals.length)];\r",
+							"const randomStatus = statusList[Math.floor(Math.random() * statusList.length)];\r",
+							"const randomId = Math.floor(Math.random() * 10000);\r",
+							"const randomCategoryId = Math.floor(Math.random() * 100);\r",
+							"const randomTagId = Math.floor(Math.random() * 100);\r",
+							"const randomTagname = tagname[Math.floor(Math.random() * tagname.length)];\r",
+							"\r",
+							"// Зберігання в варіабли\r",
+							"pm.collectionVariables.set(\"random_animal\", randomAnimal);\r",
+							"pm.collectionVariables.set(\"random_status\", randomStatus);\r",
+							"pm.collectionVariables.set(\"random_id\", randomId);\r",
+							"pm.collectionVariables.set(\"random_category_id\", randomCategoryId);\r",
+							"pm.collectionVariables.set(\"random_tag_id\", randomTagId);\r",
+							"pm.collectionVariables.set(\"random_tag_name\", randomTagname);\r",
+							"\r",
+							"// Сейв для рандомного стану в майбутньому пут реквесті\r",
+							"pm.collectionVariables.set(\"previous_status\", randomStatus);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": {{random_id}},\r\n  \"category\": {\r\n    \"id\": {{random_category_id}},\r\n    \"name\": \"{{$randomFirstName}}\"\r\n  },\r\n  \"name\": \"{{random_animal}}\",\r\n  \"photoUrls\": [\r\n    \"string\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": {{random_tag_id}},\r\n      \"name\": \"{{random_tag_name}}\"\r\n    }\r\n  ],\r\n  \"status\": \"{{random_status}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}pet",
+					"host": [
+						"{{BaseUrl}}pet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Pet",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const statusList = [\"available\", \"pending\", \"sold\"];\r",
+							"\r",
+							"// Previous values\r",
+							"const prevStatus = pm.collectionVariables.get(\"previous_status\");\r",
+							"\r",
+							"// Function to pick new different value\r",
+							"function getNewRandom(list, prevValue) {\r",
+							"    let newValue;\r",
+							"    do {\r",
+							"        newValue = list[Math.floor(Math.random() * list.length)];\r",
+							"    } while (newValue === prevValue);\r",
+							"    return newValue;\r",
+							"}\r",
+							"\r",
+							"// Pick new different name and status\r",
+							"const newStatus = getNewRandom(statusList, prevStatus);\r",
+							"\r",
+							"// Save for PUT body\r",
+							"pm.collectionVariables.set(\"random_status\", newStatus);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"\r",
+							"const prevFirstName = pm.collectionVariables.get(\"saved_first_name\");\r",
+							"\r",
+							"pm.test(\"Category First Name is changed\", function () {\r",
+							"    pm.expect(response.category.name).not.eql(prevFirstName);\r",
+							"});\r",
+							"\r",
+							"const previousStatus = pm.collectionVariables.get(\"previous_status\");\r",
+							"const newStatus = pm.collectionVariables.get(\"random_status\");\r",
+							"pm.test(\"Status is changed\", function () {\r",
+							"    pm.expect(newStatus).not.eql(previousStatus)});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": {{random_id}},\r\n  \"category\": {\r\n    \"id\": {{random_category_id}},\r\n    \"name\": \"{{$randomFirstName}}\"\r\n  },\r\n  \"name\": \"{{random_animal}}\",\r\n  \"photoUrls\": [\r\n    \"string\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": {{random_tag_id}},\r\n      \"name\": \"{{random_tag_name}}\"\r\n    }\r\n  ],\r\n  \"status\": \"{{random_status}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}pet",
+					"host": [
+						"{{BaseUrl}}pet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pet By ID Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"\r",
+							"// Перевірка що code завжди 200 \r",
+							"pm.test(\"Response code is 200\", function () {\r",
+							"    pm.expect(response.code).to.eql(200);\r",
+							"});\r",
+							"\r",
+							"// Перевірка що type завжди 'unknown'\r",
+							"pm.test(\"Response type is 'unknown'\", function () {\r",
+							"    pm.expect(response.type).to.eql(\"unknown\");\r",
+							"});\r",
+							"\r",
+							"// Перевірка що message — це числове значення (string, але з числом всередині)\r",
+							"pm.test(\"Response message is numeric string\", function () {\r",
+							"    pm.expect(response.message).to.match(/^\\d+$/);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}pet/{{random_id}}",
+					"host": [
+						"{{BaseUrl}}pet"
+					],
+					"path": [
+						"{{random_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pet By ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}pet/{{random_id}}",
+					"host": [
+						"{{BaseUrl}}pet"
+					],
+					"path": [
+						"{{random_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{Auth}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "Auth",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BaseUrl",
+			"value": "https://petstore.swagger.io/v2/",
+			"type": "string"
+		},
+		{
+			"key": "random_animal",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "Auth",
+			"value": "special-key",
+			"type": "default"
+		},
+		{
+			"key": "random_id",
+			"value": ""
+		},
+		{
+			"key": "saved_first_name",
+			"value": ""
+		},
+		{
+			"key": "random_category_id",
+			"value": ""
+		},
+		{
+			"key": "random_tag_id",
+			"value": ""
+		},
+		{
+			"key": "random_status",
+			"value": ""
+		},
+		{
+			"key": "previous_status",
+			"value": ""
+		},
+		{
+			"key": "random_tag_name",
+			"value": ""
+		}
+	]
+}
